@@ -1,4 +1,5 @@
 ﻿import React, { Component } from 'react';
+import { ButtonGroup, Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import './AddPostForm.css';
 
 export class AddPostForm extends Component {
@@ -24,8 +25,6 @@ export class AddPostForm extends Component {
 
     /// Обработка закрытия формы
     handleClose(e) {
-        e.preventDefault();
-
         if (this.props.onClose) {
             this.props.onClose();
         }
@@ -64,67 +63,55 @@ export class AddPostForm extends Component {
     /// Обработка нажатия кнопки отправить
     handleSubmit(e) {
         this.sendPost();
-        e.preventDefault();
+        
     }
 
     render() {
         return (
             <div>
-                <div>
-                    <div className="bg" onClick={this.handleClose} />
-                    <div className="addPostForm">
-                        <form onSubmit={this.handleSubmit}>
-                            <div>
-                                <label>
-                                    User Name
-                                    <input type="text"
-                                        required
-                                        value={this.state.userName}
-                                        onChange={this.handleChangeUserName}
-                                        className="inputField" />
-                                </label>
-                            </div>
-                            <div>
-                                <label>
-                                    E-mail
-                                <input type="email"
-                                        required
-                                        value={this.state.email}
-                                        onChange={this.handleChangeEmail}
-                                        className="inputField"
-                                        align="right"/>
-                                </label>
-                            </div>
-                            <div>
-                                <label>
-                                    Homepage
-                                <input type="url"
-                                        value={this.state.homepage}
-                                        onChange={this.handleChangeHomepage}
-                                        className="inputField"/>
-                                </label>
-                            </div>
-                            <div>
-                                <textarea required
-                                    onChange={this.handleChangeText}
-                                    value={this.state.text}
-                                    className="inputField"/>
-                            </div>
-                            <div>
-                                <input type="submit"
-                                    value="Добавить"
-                                    className="button" />
-                                <input type="button"
-                                    value="Сброс"
-                                    onClick={this.handleReset}
-                                    className="button" />
-                                <input type="button"
-                                    value="Отмена"
-                                    onClick={this.handleClose}
-                                    className="button" />
-                            </div>
-                        </form>
-                    </div>
+                <div className="bg" onClick={this.handleClose} />
+                <div className="addPostForm">
+                    <Form>
+                        <FormGroup>
+                            <Label for="emailInput">Email</Label>
+                            <Input type="email"
+                                name="email"
+                                id="emailInput"
+                                value={this.state.email}
+                                onChange={this.handleChangeEmail}/>
+                            <Label for="userNameInput">User Name</Label>
+                            <Input type="text"
+                                name="userName"
+                                id="userNameInput"
+                                value={this.state.userName}
+                                onChange={this.handleChangeUserName}/>
+                            <Label for="homepageInput">Homepage</Label>
+                            <Input type="url"
+                                name="homepage"
+                                id="homepageInput"
+                                value={this.state.homepage}
+                                onChange={this.handleChangeHomepage}/>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="textInput">Text</Label>
+                            <Input type="textarea"
+                                name="text"
+                                id="textInput"
+                                value={this.state.text}
+                                onChange={this.handleChangeText}/>
+                        </FormGroup>
+
+                        <FormGroup>
+                            <ButtonGroup>
+                                <Button color="primary"
+                                    onClick={this.handleSubmit}>Добавить</Button>
+                                <Button color="secondary"
+                                    onClick={this.handleReset}>Очистить</Button>
+                                <Button color="secondary"
+                                    onClick={this.handleClose}>Отмена</Button>
+                            </ButtonGroup>
+                        </FormGroup>
+                    </Form>
                 </div>
             </div>
         );
@@ -143,8 +130,13 @@ export class AddPostForm extends Component {
         const data = await response.json();
 
         if (data.isSuccess) {
+            
             if (this.props.onClose) {
                 this.props.onClose();
+            }
+            if (this.props.onSuccessAdd) {
+                alert("d")
+                this.props.onSuccessAdd();
             }
         }
 

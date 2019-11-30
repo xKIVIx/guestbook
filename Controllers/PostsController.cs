@@ -46,7 +46,7 @@ namespace Guestbook.Controllers
         [HttpPost]
         public Response AddPost(Post post)
         {
-            if (post.UserName.Length == 0 &&
+            if (post.UserName.Length == 0 ||
                 post.UserName.Length > MAX_SIZE_USER_NAME)
                 return new Response
                 {
@@ -54,7 +54,7 @@ namespace Guestbook.Controllers
                     UncorrectParam = "UserName"
                 };
 
-            if (post.Text.Length == 0 &&
+            if (post.Text.Length == 0 ||
                 post.Text.Length > MAX_SIZE_TEXT)
                 return new Response
                 {
@@ -70,7 +70,7 @@ namespace Guestbook.Controllers
                 };
 
             var emailRegex = new Regex(REGEX_EMAIL);
-            if (!emailRegex.IsMatch(post.Email) &&
+            if (!emailRegex.IsMatch(post.Email) ||
                 post.Email.Length > MAX_SIZE_EMAIL)
                 return new Response
                 {
@@ -83,7 +83,6 @@ namespace Guestbook.Controllers
             post.Date = DateTime.Now;
 
             _dbService.AddPost(post, ip, browser);
-
             return new Response
             {
                 IsSuccess = true
@@ -100,9 +99,11 @@ namespace Guestbook.Controllers
         [HttpGet]
         public PostsResponse GetPosts(int page)
         {
+            var countPages = _dbService.GetCountPosts();
             var response = new PostsResponse()
             {
-                CountPages = _dbService.GetCountPosts(),
+                IsSuccess = true,
+                CountPages = countPages / PAGE_SIZE + countPages % PAGE_SIZE > 0 ? 1 : 0,
                 Posts = _dbService.GetPosts(PAGE_SIZE * page, PAGE_SIZE)
             };
 
