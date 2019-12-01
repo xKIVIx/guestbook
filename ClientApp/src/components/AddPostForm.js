@@ -32,11 +32,13 @@ export class AddPostForm extends Component {
 
     }
 
+    /// Проверка корректен ли email
     checkIsCorrectEmail(email) {
         const reg = /^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/m;
         return email.search(reg) != -1;
     }
 
+    /// Проверка корректности домашней страницы
     checkIsCorrectHomepage(homepage) {
         const reg = /^(http[s]?:\/\/)?(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+$/m;
         if (homepage.length > 0) {
@@ -51,12 +53,14 @@ export class AddPostForm extends Component {
 
     }
 
+    /// Проверка корректности введеного имени пользователя
     checkIsCorrectUserName(userName) {
         const reg = /^[\w ]+$/m;
         return userName.length > 0 &&
                userName.search(reg) != -1;
     }
 
+    /// Проверка корректности введеного сообщения
     checkIsCorrectText(text) {
         const reg = /<[\w/ ]+>/m;
         return text.length > 0 &&
@@ -237,6 +241,21 @@ export class AddPostForm extends Component {
             }
             if (this.props.onSuccessAdd) {
                 this.props.onSuccessAdd();
+            }
+        } else {
+            switch (data.uncorrectParam) {
+                case "UserName":
+                    this.setState({ isInvalidUserName: true })
+                    break;
+                case "Email":
+                    this.setState({ isInvalidEmail: true })
+                    break;
+                case "Homepage":
+                    this.setState({ isInvalidHomepage: true })
+                    break;
+                case "Text":
+                    this.setState({ isInvalidText: true })
+                    break;
             }
         }
 
