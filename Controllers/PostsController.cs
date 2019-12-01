@@ -95,16 +95,29 @@ namespace Guestbook.Controllers
         /// <param name="page">
         /// Страница отображения
         /// </param>
+        /// <param name="orderField">
+        /// Поле по которому происходит сортировка.
+        /// Поддерживамые поля:
+        /// "email" - email пользователя
+        /// "userName" - имя пользователя
+        /// "date" - дата публикации
+        /// </param>
+        /// <param name="orderType">
+        /// Вид сортировки.
+        /// "forward" - по возрастанию
+        /// "backward" - по убыванию
+        /// </param>
         /// <returns></returns>
         [HttpGet]
-        public PostsResponse GetPosts(int page)
+        public PostsResponse GetPosts(int page, string orderField, string orderType)
         {
+            
             var countPages = _dbService.GetCountPosts();
             var response = new PostsResponse()
             {
                 IsSuccess = true,
                 CountPages = countPages / PAGE_SIZE + countPages % PAGE_SIZE > 0 ? 1 : 0,
-                Posts = _dbService.GetPosts(PAGE_SIZE * page, PAGE_SIZE)
+                Posts = _dbService.GetPosts(PAGE_SIZE * page, PAGE_SIZE, orderField, orderType)
             };
 
             return response;

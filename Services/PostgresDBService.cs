@@ -66,10 +66,35 @@ namespace Guestbook.Services
         }
 
         /// <summary>
-        /// <see cref="IDBService.GetPosts(int, int)"/>
+        /// <see cref="IDBService.GetPosts(int, int, string, string)"/>
         /// </summary>
-        public IEnumerable<Post> GetPosts(int offset, int count)
+        public IEnumerable<Post> GetPosts(int offset, int count, string orderField, string orderType)
         {
+            var orderCom = "ORDER BY ";
+
+            switch(orderField)
+            {
+                case "email":
+                    orderCom += "email ";
+                    break;
+                case "date":
+                    orderCom += "datepublish ";
+                    break;
+                case "userName":
+                    orderCom += "userName ";
+                    break;
+                default:
+                    orderCom = "";
+                    break;
+            }
+
+            if (orderCom != "" && orderType == "backward")
+            {
+                orderCom += "DESC ";
+            }
+
+
+
             using var connection = new NpgsqlConnection(_connectString);
             connection.Open();
 
@@ -77,6 +102,7 @@ namespace Guestbook.Services
 
             using (var cmd = new NpgsqlCommand("SELECT userName, email, homepage, text, datepublish " +
                                                "FROM book " +
+                                               orderCom +
                                                "LIMIT @count OFFSET @offset;",
                                                connection))
             {

@@ -26,8 +26,20 @@ namespace Guestbook.Services
         /// </summary>
         /// <param name="offset"></param>
         /// <param name="count"></param>
+        /// <param name="orderField">
+        /// Поле по которому происходит сортировка.
+        /// Поддерживамые поля:
+        /// "email" - email пользователя
+        /// "userName" - имя пользователя
+        /// "date" - дата публикации
+        /// </param>
+        /// <param name="orderType">
+        /// Вид сортировки.
+        /// "forward" - по возрастанию
+        /// "backward" - по убыванию
+        /// </param>
         /// <returns></returns>
-        IEnumerable<Post> GetPosts(int offset, int count);
+        IEnumerable<Post> GetPosts(int offset, int count, string orderField, string orderType);
 
         #endregion Public Methods
     }
