@@ -12,9 +12,9 @@ namespace Guestbook.Services
 
         #region Public Constructors
 
-        public PostgresDBService()
+        public PostgresDBService(string connectString)
         {
-            _connectString = "Host=localhost;Port=5432;Username=postgres;Password=435209092;Database=guestbook";
+            _connectString = connectString;
         }
 
         #endregion Public Constructors

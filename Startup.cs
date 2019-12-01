@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace Guestbook
 {
@@ -30,6 +31,7 @@ namespace Guestbook
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -65,9 +67,13 @@ namespace Guestbook
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            string databaseConnectString = Configuration.GetConnectionString("Database");
+
             services.AddControllersWithViews();
             services.AddHttpContextAccessor();
-            services.AddSingleton<IDBService, PostgresDBService>();
+            services.AddSingleton<IDBService, PostgresDBService>((IServiceProvider provider) => {
+                return new PostgresDBService(databaseConnectString);
+            });
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
