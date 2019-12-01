@@ -76,6 +76,7 @@ export class Posts extends Component {
 
     /// Получить вывод постов из массива
     getPostsPresents(posts) {
+        let postId = 0;
         return posts.map(function (item) {
             let date = new Date(item.date)
             let options = {
@@ -86,8 +87,9 @@ export class Posts extends Component {
                 minute: 'numeric',
                 second: 'numeric'
             }
+            postId += 1;
             return (
-                <div className="post">
+                <div className="post" key={"post_" + postId}>
                     <div>
                         <p>{item.userName} - {item.email}</p>
                     </div>
