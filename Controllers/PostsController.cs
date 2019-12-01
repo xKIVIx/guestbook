@@ -127,7 +127,7 @@ namespace Guestbook.Controllers
             var response = new PostsResponse()
             {
                 IsSuccess = true,
-                CountPages = countPages / PAGE_SIZE + countPages % PAGE_SIZE > 0 ? 1 : 0,
+                CountPages = countPages / PAGE_SIZE + (countPages % PAGE_SIZE > 0 ? 1 : 0),
                 Posts = _dbService.GetPosts(PAGE_SIZE * page, PAGE_SIZE, orderField, orderType)
             };
 
