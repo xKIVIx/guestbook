@@ -20,13 +20,10 @@ export class Posts extends Component {
         page = page === undefined ? 0 : Number(page);
         this.currentPage = page;
 
-        const query = this.props.location.search;
+        const queryParams = new URLSearchParams(this.props.location.search);
 
-        let orderType = query.orderType;
-        this.orderType = orderType === undefined ? "forward" : orderType;
-
-        let orderField = query.orderField;
-        this.orderField = orderField === undefined ? "date" : orderField;
+        this.orderType = queryParams.has("orderType") ? queryParams.get("orderType") : "forward";
+        this.orderField = queryParams.has("orderField") ? queryParams.get("orderField") : "date";
 
         this.handleNextPage = this.handleNextPage.bind(this);
         this.handleBackPage = this.handleBackPage.bind(this);
@@ -176,7 +173,7 @@ export class Posts extends Component {
         if (data.isSuccess) {
             this.setState({
                 posts: data.posts,
-                countPages: 3//data.countPages
+                countPages: data.countPages
             });
         }
     }

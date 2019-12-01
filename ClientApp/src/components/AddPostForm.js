@@ -1,6 +1,11 @@
 ﻿import React, { Component } from 'react';
-import { ButtonGroup, Button, Form, FormGroup, Label, Input } from 'reactstrap';
+import { ButtonGroup, Button, Form, FormGroup, Label, Input, FormFeedback, FormText } from 'reactstrap';
 import './AddPostForm.css';
+
+const MAX_LEN_TEXT = 1000
+const MAX_LEN_EMAIL = 100
+const MAX_LEN_USER_NAME = 100
+const MAX_LEN_HOMEPAGE = 300
 
 export class AddPostForm extends Component {
     static displayName = AddPostForm.name;
@@ -11,7 +16,11 @@ export class AddPostForm extends Component {
             userName: '',
             email: '',
             homepage: '',
-            text: ''
+            text: '',
+            isInvalidEmail: false,
+            isInvalidUserName: false,
+            isInvalidHomepage: false,
+            isInvalidText: false
         }
         this.handleChangeUserName = this.handleChangeUserName.bind(this);
         this.handleChangeEmail = this.handleChangeEmail.bind(this);
@@ -23,6 +32,37 @@ export class AddPostForm extends Component {
 
     }
 
+    checkIsCorrectEmail(email) {
+        const reg = /^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/m;
+        return email.search(reg) != -1;
+    }
+
+    checkIsCorrectHomepage(homepage) {
+        const reg = /^(http[s]?:\/\/)?(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+$/m;
+        if (homepage.length > 0) {
+            if (homepage.search(reg) != -1) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
+
+    }
+
+    checkIsCorrectUserName(userName) {
+        const reg = /^[\w ]+$/m;
+        return userName.length > 0 &&
+               userName.search(reg) != -1;
+    }
+
+    checkIsCorrectText(text) {
+        const reg = /<[\w/ ]+>/m;
+        return text.length > 0 &&
+               text.search(reg) == -1;
+    }
+
     /// Обработка закрытия формы
     handleClose(e) {
         if (this.props.onClose) {
@@ -32,22 +72,34 @@ export class AddPostForm extends Component {
 
     /// Обработка изменения поля email
     handleChangeEmail(e) {
-        this.setState({ email: e.target.value });
+        this.setState({
+            email: e.target.value,
+            isInvalidEmail: false
+        });
     }
 
     /// Обработка изменения поля homepage
     handleChangeHomepage(e) {
-        this.setState({ homepage: e.target.value });
+        this.setState({
+            homepage: e.target.value,
+            isInvalidHomepage: false
+        });
     }
 
     /// Обработка изменения поля user name
     handleChangeUserName(e) {
-        this.setState({ userName: e.target.value });
+        this.setState({
+            userName: e.target.value,
+            isInvalidUserName: false
+        });
     }
 
     /// Обработка изменения поля сообщения
     handleChangeText(e) {
-        this.setState({ text: e.target.value });
+        this.setState({
+            text: e.target.value,
+            isInvalidText: false
+        });
     }
 
     /// Обработка сброса полей
@@ -62,8 +114,39 @@ export class AddPostForm extends Component {
 
     /// Обработка нажатия кнопки отправить
     handleSubmit(e) {
-        this.sendPost();
-        
+        let succesCheck = true;
+
+        if (!this.checkIsCorrectEmail(this.state.email)) {
+            this.setState({
+                isInvalidEmail: true
+            });
+            succesCheck = false;
+        }
+
+        if (!this.checkIsCorrectHomepage(this.state.homepage)) {
+            this.setState({
+                isInvalidHomepage: true
+            });
+            succesCheck = false;
+        }
+
+        if (!this.checkIsCorrectUserName(this.state.userName)) {
+            this.setState({
+                isInvalidUserName: true
+            });
+            succesCheck = false;
+        }
+
+        if (!this.checkIsCorrectText(this.state.text)) {
+            this.setState({
+                isInvalidText: true
+            });
+            succesCheck = false;
+        }
+
+        if (succesCheck) {
+            this.sendPost();
+        }
     }
 
     render() {
@@ -78,27 +161,45 @@ export class AddPostForm extends Component {
                                 name="email"
                                 id="emailInput"
                                 value={this.state.email}
-                                onChange={this.handleChangeEmail}/>
+                                onChange={this.handleChangeEmail}
+                                invalid={this.state.isInvalidEmail}
+                                maxLength={MAX_LEN_EMAIL}/>
+                            <FormFeedback>Неверный email адресс</FormFeedback>
+                        </FormGroup>
+                        <FormGroup>
                             <Label for="userNameInput">User Name</Label>
                             <Input type="text"
                                 name="userName"
                                 id="userNameInput"
                                 value={this.state.userName}
-                                onChange={this.handleChangeUserName}/>
+                                onChange={this.handleChangeUserName}
+                                invalid={this.state.isInvalidUserName}
+                                maxLength={MAX_LEN_USER_NAME}/>
+                            <FormFeedback>Неверное имя пользователя</FormFeedback>
+                        </FormGroup>
+                        <FormGroup>
                             <Label for="homepageInput">Homepage</Label>
                             <Input type="url"
                                 name="homepage"
                                 id="homepageInput"
                                 value={this.state.homepage}
-                                onChange={this.handleChangeHomepage}/>
+                                onChange={this.handleChangeHomepage}
+                                maxLength={MAX_LEN_HOMEPAGE}
+                                invalid={this.state.isInvalidHomepage} />
+                            <FormFeedback>Некорректный URL</FormFeedback>
                         </FormGroup>
                         <FormGroup>
                             <Label for="textInput">Text</Label>
                             <Input type="textarea"
+                                required
                                 name="text"
                                 id="textInput"
                                 value={this.state.text}
-                                onChange={this.handleChangeText}/>
+                                onChange={this.handleChangeText}
+                                invalid={this.state.isInvalidText}
+                                maxLength={MAX_LEN_TEXT}/>
+                            <FormFeedback>Нельзя отправить пустое сообщение. HTML теги недопустимы.</FormFeedback>
+                            <FormText>{this.state.text.length} / {MAX_LEN_TEXT}</FormText>
                         </FormGroup>
 
                         <FormGroup>
@@ -135,7 +236,6 @@ export class AddPostForm extends Component {
                 this.props.onClose();
             }
             if (this.props.onSuccessAdd) {
-                alert("d")
                 this.props.onSuccessAdd();
             }
         }
